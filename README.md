@@ -8,4 +8,4 @@ And with some expansion, we get -\epsilon 1 \leq A(x)\[y, z\] \leq \epsilon 1 ,
 so with linear optimize, we get mother wavelet from the input.
 
 # Tips
-This might leads us to p_1/2 prediction, or, cracks some machine learning depend difficulty on real world problems.
+This might leads us to p_1/2 prediction, or, cracks some machine learning depend difficulty on real world problems with deterministic form on simple calculated y vector.
