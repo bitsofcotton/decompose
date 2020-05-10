@@ -1,5 +1,5 @@
-# decompoe_orth
-Decompose serial input to mother wavelet. Before draft.
+# decompose
+Decompose serial input to mother wavelet.
 
 # Inner structure
 Suppose input vector x in R^n, there exists mother wavelet y in R^n and some intensity z in R^n s.t.
