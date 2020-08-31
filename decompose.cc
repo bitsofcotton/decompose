@@ -70,7 +70,7 @@ int main(int argc, const char* argv[]) {
   SimpleVector<num_t> vv(v.size());
   for(int i = 0; i < v.size(); i ++)
     vv[i] = v[i];
-  Decompose<num_t> odc;
+  Decompose<num_t> odc(vv.size());
   const auto dc(odc.next(vv));
   for(int i = 0; i < dc.size(); i ++)
     std::cout << dc[i] << std::endl;
