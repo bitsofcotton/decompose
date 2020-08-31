@@ -36,14 +36,35 @@ public:
   typedef SimpleVector<T> Vec;
   typedef SimpleMatrix<T> Mat;
   inline Decompose();
+  inline Decompose(const int& size);
   inline ~Decompose();
   const Vec& next(const Vec& in);
   T   lasterr;
   Vec f;
+  std::vector<Mat> bA;
+  Mat A;
 };
 
 template <typename T> inline Decompose<T>::Decompose() {
   ;
+}
+
+template <typename T> inline Decompose<T>::Decompose(const int& size) {
+  P0<T> p0;
+  A.resize(size, size);
+  for(int i = 0; i < A.rows(); i ++)
+    for(int j = 0; j < A.cols(); j ++)
+      A(i, j) = T(i == j ? 1 : 0);
+  bA.emplace_back(A);
+  for(int i = 1; i < size; i ++) {
+    SimpleMatrix<T> AA(size, size);
+    for(int j = 0; j < A.rows(); j ++) {
+      const auto jj(T(j) * T(i + 1) / T(size - 1));
+      AA.row(j) = p0.taylor(A.cols(), (jj - floor(jj)) * T(size - 1));
+    }
+    bA.emplace_back(AA);
+    A += AA;
+  }
 }
 
 template <typename T> inline Decompose<T>::~Decompose() {
@@ -51,29 +72,13 @@ template <typename T> inline Decompose<T>::~Decompose() {
 }
 
 template <typename T> const typename Decompose<T>::Vec& Decompose<T>::next(const Vec& in) {
-  static P0<T> p0;
-  Mat A(in.size(), in.size());
-  for(int i = 0; i < A.rows(); i ++)
-    for(int j = 0; j < A.cols(); j ++)
-      A(i, j) = T(i == j ? 1 : 0);
-  std::vector<Mat> bA;
-  bA.emplace_back(A);
-  for(int i = 1; i < in.size(); i ++) {
-    SimpleMatrix<T> AA(in.size(), in.size());
-    for(int j = 0; j < A.rows(); j ++) {
-      const auto jj(T(j) * T(i + 1) / T(in.size() - 1));
-      AA.row(j) = p0.taylor(A.cols(), (jj - floor(jj)) * T(in.size() - 1));
-    }
-    bA.emplace_back(AA);
-    A += AA;
-  }
+  assert(A.rows() == in.size());
   f  = A.solve(in);
   f /= sqrt(f.dot(f));
-  A *= T(0);
+  Mat B(A.rows(), A.cols());
   for(int i = 0; i < bA.size(); i ++)
-    A.setCol(i, bA[i] * f);
-  const auto n(A.solve(in)[0]);
-  return f *= sqrt(n.dot(n));
+    B.setCol(i, bA[i] * f);
+  return f *= B.solve(in)[0] / in.size();
 }
 
 #define _DECOMPOSE_
