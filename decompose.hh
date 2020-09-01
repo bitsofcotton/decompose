@@ -38,7 +38,7 @@ public:
   inline Decompose();
   inline Decompose(const int& size);
   inline ~Decompose();
-  const Vec& next(const Vec& in);
+  const Vec& next(const Vec& in0);
   T   lasterr;
   Vec f;
   std::vector<Mat> bA;
@@ -71,8 +71,15 @@ template <typename T> inline Decompose<T>::~Decompose() {
   ;
 }
 
-template <typename T> const typename Decompose<T>::Vec& Decompose<T>::next(const Vec& in) {
-  assert(A.rows() == in.size());
+template <typename T> const typename Decompose<T>::Vec& Decompose<T>::next(const Vec& in0) {
+  assert(A.rows() == in0.size());
+  auto in(in0);
+  auto avg(in[0]);
+  for(int i = 1; i < in.size(); i ++)
+    avg += in[i];
+  avg /= T(in.size());
+  for(int i = 0; i < in.size(); i ++)
+    in[i] -= avg;
   f  = A.solve(in);
   f /= sqrt(f.dot(f));
   Mat B(A.rows(), A.cols());
