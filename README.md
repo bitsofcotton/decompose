@@ -7,6 +7,20 @@ x = \[y, \[I_{1/2}y, I_{1/2}y\], ..., \[average y, ..., average y\] \] \* z.
 And with some expansion (and scale for some axis results:), we get -\epsilon 1 \leq A(x)\[y, z^-1\] \leq \epsilon 1 ,
 so with linear optimize with certain z range, we get mother wavelet from the input. (But the quadratic optimization is recommended for the form.)
 
+# How to use
+    const int count(20);
+    SimpleVector<T> v(count);
+    Decompose<T> decom(v.size());
+    // some operation on v.
+    const auto mw(decom.next(v));
+    
+    // or we can do:
+    const int count(20);
+    SimpleVector<T> dst(/* some size */);
+    SimpleVector<T> src(/* some size */);
+    // some operation on dst, src.
+    const auto mimic(Decompose(count).mimic(dst, src));
+
 # Tips
 This might leads us to p_1/2 prediction, or, cracks some machine learning depend difficulty on real world problems with deterministic form on simple calculated y vector.
 
