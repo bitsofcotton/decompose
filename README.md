@@ -20,6 +20,11 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     SimpleVector<T> src(/* some size */);
     // some operation on dst, src.
     const auto mimic(Decompose(count).mimic(dst, src));
+    
+    // or we can do:
+    const int count(20);
+    SimpleVector<T> v(/*some size */);
+    const auto emphasis(Decompose(count).lpf(v, /* some intensity */));
 
 # Tips
 This might leads us to p_1/2 prediction, or, cracks some machine learning depend difficulty on real world problems with deterministic form on simple calculated y vector.
