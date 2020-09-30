@@ -22,7 +22,7 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     // or we can do:
     SimpleVector<T> v(/*some size */);
     // some operation on v.
-    const auto emphasis(Decompose(/* some size */).lpf(v, /* some intensity */));
+    const auto emphasis(Decompose(/* some size */).emphasis(v, /* some intensity */));
 
 # Tips
 This might leads us to p_1/2 prediction, or, cracks some machine learning depend difficulty on real world problems with deterministic form on simple calculated y vector.
