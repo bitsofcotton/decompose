@@ -8,8 +8,7 @@ And with some expansion (and scale for some axis results:), we get -\epsilon 1 \
 so with linear optimize with certain z range, we get mother wavelet from the input. (But the quadratic optimization is recommended for the form.)
 
 # How to use
-    const int count(20);
-    SimpleVector<T> v(count);
+    SimpleVector<T> v(/* some size */);
     Decompose<T> decom(v.size());
     // some operation on v.
     const auto mw(decom.next(v));
@@ -22,6 +21,7 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     
     // or we can do:
     SimpleVector<T> v(/*some size */);
+    // some operation on v.
     const auto emphasis(Decompose(/* some size */).lpf(v, /* some intensity */));
 
 # Tips
