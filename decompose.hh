@@ -46,8 +46,8 @@ public:
   T   lasterr;
   std::vector<Mat> bA;
   Mat A;
-         Vec prepare(const Vec& in) const;
-         Vec apply(const Vec& v, const Vec& dst, const Vec& src) const;
+         Vec prepare(const Vec& in, const int& idx = 0) const;
+         Vec apply(const Vec& v, const Vec& dst, const Vec& src, const int& idx = 0) const;
 };
 
 template <typename T> inline Decompose<T>::Decompose() {
@@ -77,42 +77,14 @@ template <typename T> inline Decompose<T>::~Decompose() {
 
 template <typename T> typename Decompose<T>::Vec Decompose<T>::mimic(const Vec& dst, const Vec& src, const T& intensity) const {
   const int  size(bA.size());
-  const auto dd(prepare(dst));
-  const auto ss(prepare(src));
-        auto res(dd);
   const auto size2(dst.size() / size);
   const auto size3(src.size() / size);
+        auto res(dst);
   for(int i = 0; i < size2; i ++) {
-    auto d2(dd);
-    auto s2(ss);
-    for(int j = 0; j < dd.size(); j ++)
-      d2[j] = dd[(j + i) % dd.size()];
-    for(int j = 0; j < ss.size(); j ++)
-      s2[j] = ss[(j + i * size3 / size2) % ss.size()];
-    const auto m0(apply(d2, mimic0(d2, s2) * intensity +
-                                        d2 * (T(1) - intensity), d2));
-    for(int j = 0; j < size; j ++)
-      res[(j * size + i + size2 / 2) % res.size()] =
-        m0[(j * size + size3 / 2) % m0.size()];
-  }
-  return res;
-}
-
-template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Vec& dst, const T& intensity) const {
-  const int  size(bA.size());
-  const auto dd(prepare(dst));
-        auto res(dd);
-  const auto size2(dst.size() / size);
-  for(int i = 0; i < size2; i ++) {
-    auto d2(dd);
-    for(int j = 0; j < dd.size(); j ++)
-      d2[j] = dd[(j + i) % dd.size()];
-    const auto ndd(next(d2));
-          auto freq(complementMat(ndd).solve(d2));
-    const auto normfreq(sqrt(freq.dot(freq)));
-    for(int j = 0; j < freq.size() - 1; j ++)
-      freq[j] += intensity * T(j + 1) / T(freq.size() - 1) * normfreq;
-    const auto m0(apply(d2, complementMat(ndd) * freq, d2));
+    const auto dd(prepare(dst, i));
+    const auto m0(apply(dd, mimic0(dd,
+                    prepare(src, i * size3 / size2) * intensity +
+                    dd * (T(1) - intensity)), dd, i));
     for(int j = 0; j < size; j ++)
       res[(j * size + i + size2 / 2) % res.size()] =
         m0[(j * size + size2 / 2) % m0.size()];
@@ -120,7 +92,26 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Ve
   return res;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec& in) const {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Vec& dst, const T& intensity) const {
+  const int  size(bA.size());
+  const auto size2(dst.size() / size);
+        auto res(dst);
+  for(int i = 0; i < size2; i ++) {
+    const auto dd(prepare(dst, i));
+    const auto ndd(next(dd));
+          auto freq(complementMat(ndd).solve(dd));
+    const auto normfreq(sqrt(freq.dot(freq)));
+    for(int j = 0; j < freq.size() - 1; j ++)
+      freq[j] += intensity * T(j + 1) / T(freq.size() - 1) * normfreq;
+    const auto m0(apply(dd, complementMat(ndd) * freq, dd, i));
+    for(int j = 0; j < size; j ++)
+      res[(j * size + i + size2 / 2) % res.size()] =
+        m0[(j * size + size2 / 2) % m0.size()];
+  }
+  return res;
+}
+
+template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec& in, const int& idx) const {
   const int  size(bA.size());
   const auto cnt(int(in.size() + size - 1) / size - 1);
   assert(0 < cnt);
@@ -134,13 +125,13 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec
     const auto ibegin(i * cnt);
     const auto iend(i < size - 1 ? min((i + 1) * cnt, int(in.size())) : int(in.size()));
     for(int j = ibegin; j < iend; j ++)
-      res[i] += in[j];
+      res[i] += in[(j + idx) % in.size()];
     res[i] /= T(iend - ibegin);
   }
   return res;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& v, const Vec& dst, const Vec& src) const {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& v, const Vec& dst, const Vec& src, const int& idx) const {
   const int  size(bA.size());
   assert(dst.size() == size && src.size() == size);
   const auto cnt(int(v.size() + size - 1) / size - 1);
@@ -154,7 +145,7 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& 
     for(int j = i * cnt;
             j < (i < res.size() - 1 ? min((i + 1) * cnt, int(res.size())) : int(res.size()));
             j ++)
-      res[j] *= ratio;
+      res[(j + res.size() - idx) % res.size()] *= ratio;
   }
   return res;
 }
