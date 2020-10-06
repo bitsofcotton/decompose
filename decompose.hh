@@ -78,16 +78,22 @@ template <typename T> inline Decompose<T>::~Decompose() {
 template <typename T> typename Decompose<T>::Vec Decompose<T>::mimic(const Vec& dst, const Vec& src, const T& intensity) const {
   const int  size(bA.size());
   const auto dd(prepare(dst));
+  const auto ss(prepare(src));
         auto res(dd);
-  for(int i = 0; i < size; i ++) {
+  const auto size2(dst.size() / size);
+  const auto size3(src.size() / size);
+  for(int i = 0; i < size2; i ++) {
     auto d2(dd);
+    auto s2(ss);
     for(int j = 0; j < dd.size(); j ++)
       d2[j] = dd[(j + i) % dd.size()];
-    const auto m0(apply(dst, mimic0(dd, prepare(src)) * intensity +
-                                        dd * (T(1) - intensity), dd));
-    for(int j = 0; j <= dd.size() / size; j ++)
-      res[(j * size + i + size / 2) % res.size()] =
-        m0[(j * size + size / 2) % m0.size()];
+    for(int j = 0; j < ss.size(); j ++)
+      s2[j] = ss[(j + i * size3 / size2) % ss.size()];
+    const auto m0(apply(d2, mimic0(d2, s2) * intensity +
+                                        d2 * (T(1) - intensity), d2));
+    for(int j = 0; j < size; j ++)
+      res[(j * size + i + size2 / 2) % res.size()] =
+        m0[(j * size + i * size3 / size2 + size3 / 2) % m0.size()];
   }
   return res;
 }
@@ -96,7 +102,8 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Ve
   const int  size(bA.size());
   const auto dd(prepare(dst));
         auto res(dd);
-  for(int i = 0; i < size; i ++) {
+  const auto size2(dst.size() / size);
+  for(int i = 0; i < size2; i ++) {
     auto d2(dd);
     for(int j = 0; j < dd.size(); j ++)
       d2[j] = dd[(j + i) % dd.size()];
@@ -106,9 +113,9 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Ve
     for(int j = 0; j < freq.size() - 1; j ++)
       freq[j] += intensity * T(j + 1) / T(freq.size() - 1) * normfreq;
     const auto m0(apply(dst, complementMat(ndd) * freq, dd));
-    for(int j = 0; j <= dd.size() / size; j ++)
-      res[(j * size + i + size / 2) % res.size()] =
-        m0[(j * size + size / 2) % m0.size()];
+    for(int j = 0; j < size; j ++)
+      res[(j * size + i + size2 / 2) % res.size()] =
+        m0[(j * size + size2 / 2) % m0.size()];
   }
   return res;
 }
