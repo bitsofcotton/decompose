@@ -38,17 +38,16 @@ public:
   inline Decompose();
   inline Decompose(const int& size);
   inline ~Decompose();
-         Vec mimic(const Vec& dst, const Vec& src, const T& intensity = T(1));
-         Vec emphasis(const Vec& dst, const T& intensity = T(1));
-  inline Vec mimic0(const Vec& dst, const Vec& src);
-         Vec next(const Vec& in0);
-  Mat complementMat(const Vec& in);
+         Vec mimic(const Vec& dst, const Vec& src, const T& intensity = T(1)) const;
+         Vec emphasis(const Vec& dst, const T& intensity = T(1)) const;
+  inline Vec mimic0(const Vec& dst, const Vec& src) const;
+         Vec next(const Vec& in0) const;
+  Mat complementMat(const Vec& in) const;
   T   lasterr;
   std::vector<Mat> bA;
   Mat A;
-private:
-         Vec prepare(const Vec& in);
-         Vec apply(const Vec& v, const Vec& dst, const Vec& src);
+         Vec prepare(const Vec& in) const;
+         Vec apply(const Vec& v, const Vec& dst, const Vec& src) const;
 };
 
 template <typename T> inline Decompose<T>::Decompose() {
@@ -76,25 +75,45 @@ template <typename T> inline Decompose<T>::~Decompose() {
   ;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::mimic(const Vec& dst, const Vec& src, const T& intensity) {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::mimic(const Vec& dst, const Vec& src, const T& intensity) const {
   const int  size(bA.size());
   const auto dd(prepare(dst));
-  return apply(dst,
-    mimic0(dd, prepare(src)) * intensity + dd * (T(1) - intensity), dd);
+        auto res(dd);
+  for(int i = 0; i < size; i ++) {
+    auto d2(dd);
+    for(int j = 0; j < dd.size(); j ++)
+      d2[j] = dd[(j + i) % dd.size()];
+    const auto m0(apply(dst, mimic0(dd, prepare(src)) * intensity +
+                                        dd * (T(1) - intensity), dd));
+    for(int j = 0; j <= dd.size() / size; j ++)
+      res[(j * size + i + size / 2) % res.size()] =
+        m0[(j * size + size / 2) % m0.size()];
+  }
+  return res;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Vec& dst, const T& intensity) {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Vec& dst, const T& intensity) const {
   const int  size(bA.size());
   const auto dd(prepare(dst));
-  const auto ndd(next(dd));
-        auto freq(complementMat(ndd).solve(dd));
-  const auto normfreq(sqrt(freq.dot(freq)));
-  for(int i = 0; i < freq.size() - 1; i ++)
-    freq[i] += intensity * T(i + 1) / T(freq.size() - 1) * normfreq;
-  return apply(dst, complementMat(ndd) * freq, dd);
+        auto res(dd);
+  for(int i = 0; i < size; i ++) {
+    auto d2(dd);
+    for(int j = 0; j < dd.size(); j ++)
+      d2[j] = dd[(j + i) % dd.size()];
+    const auto ndd(next(d2));
+          auto freq(complementMat(ndd).solve(d2));
+    const auto normfreq(sqrt(freq.dot(freq)));
+    for(int j = 0; j < freq.size() - 1; j ++)
+      freq[j] += intensity * T(j + 1) / T(freq.size() - 1) * normfreq;
+    const auto m0(apply(dst, complementMat(ndd) * freq, dd));
+    for(int j = 0; j <= dd.size() / size; j ++)
+      res[(j * size + i + size / 2) % res.size()] =
+        m0[(j * size + size / 2) % m0.size()];
+  }
+  return res;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec& in) {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec& in) const {
   const int  size(bA.size());
   const auto cnt(int(in.size() + size - 1) / size - 1);
   assert(0 < cnt);
@@ -114,7 +133,7 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::prepare(const Vec
   return res;
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& v, const Vec& dst, const Vec& src) {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& v, const Vec& dst, const Vec& src) const {
   const int  size(bA.size());
   assert(dst.size() == size && src.size() == size);
   const auto cnt(int(v.size() + size - 1) / size - 1);
@@ -133,11 +152,11 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::apply(const Vec& 
   return res;
 }
 
-template <typename T> inline typename Decompose<T>::Vec Decompose<T>::mimic0(const Vec& dst, const Vec& src) {
+template <typename T> inline typename Decompose<T>::Vec Decompose<T>::mimic0(const Vec& dst, const Vec& src) const {
   return complementMat(next(dst)) * complementMat(next(src)).solve(dst);
 }
 
-template <typename T> typename Decompose<T>::Vec Decompose<T>::next(const Vec& in0) {
+template <typename T> typename Decompose<T>::Vec Decompose<T>::next(const Vec& in0) const {
   assert(A.rows() == in0.size());
   auto in(in0);
   auto avg(in[0]);
@@ -150,7 +169,7 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::next(const Vec& i
   return f /= f.dot(f);
 }
 
-template <typename T> typename Decompose<T>::Mat Decompose<T>::complementMat(const Vec& in) {
+template <typename T> typename Decompose<T>::Mat Decompose<T>::complementMat(const Vec& in) const {
   Mat B(A.rows(), A.cols());
 #if defined(_OPENMP)
 #pragma omp parallel for schedule(static, 1)
