@@ -68,12 +68,13 @@ int main(int argc, const char* argv[]) {
     ins >> v[v.size() - 1];
   }
   SimpleVector<num_t> vv(v.size());
-  for(int i = 0; i < v.size(); i ++)
+  for(int i = 0; i < vv.size(); i ++)
     vv[i] = v[i];
   Decompose<num_t> odc(vv.size());
   const auto dc(odc.next(vv));
+  const auto dd(odc.complementMat(dc).solve(vv));
   for(int i = 0; i < dc.size(); i ++)
-    std::cout << dc[i] << std::endl;
+    std::cout << dc[i] << "\t" << dd[i] << std::endl;
   return 0;
 }
 
