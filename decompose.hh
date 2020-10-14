@@ -102,8 +102,9 @@ template <typename T> typename Decompose<T>::Vec Decompose<T>::emphasis(const Ve
           auto freq(complementMat(ndd).solve(dd));
     const auto nfreq(sqrt(freq.dot(freq)));
     for(int j = 0; j < freq.size() - 1; j ++)
-      freq[j] += intensity * T(j + 1) / T(freq.size() - 1) * nfreq;
-    const auto m0(apply(dst, complementMat(ndd) * freq, dd, i));
+      freq[j] = T(j + 1) / T(freq.size() - 1) * nfreq;
+    const auto m0(apply(dst,
+      complementMat(ndd) * freq * intensity + dd * (T(1) - intensity), dd, i));
     for(int j = 0; j < size; j ++)
       res[(j * size2 + i + size2 / 2) % res.size()] =
         m0[(j * size2 + i + size2 / 2) % m0.size()];
@@ -157,12 +158,8 @@ template <typename T> inline typename Decompose<T>::Vec Decompose<T>::mimic0(con
 template <typename T> typename Decompose<T>::Vec Decompose<T>::next(const Vec& in0) const {
   assert(A.rows() == in0.size());
   auto in(in0);
-  auto avg(in[0]);
-  for(int i = 1; i < in.size(); i ++)
-    avg += in[i];
-  avg /= T(in.size());
   for(int i = 0; i < in.size(); i ++)
-    in[i] -= avg;
+    in[i] -= in0[0];
   auto f(A.solve(in));
   return f /= sqrt(f.dot(f));
 }
