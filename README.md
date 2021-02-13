@@ -11,7 +11,7 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     SimpleVector<T> v(/* some size */);
     Decompose<T> decom(v.size());
     // some operation on v.
-    const auto mw(decom.mother(v));
+    const auto mw(decom.next(v));
     
     // or we can do:
     SimpleVector<T> dst(/* some size */);
@@ -30,14 +30,7 @@ This is similar algorithm to multilayer perceptron algorithm because latter one 
 # Known bug
 This returns overlearned result because of max rank matrix.
 
-# The things undone
-If we work with linear optimize, we can get non-overlearning result for the wavelet.
-But this is not implemented.
-
 # Another Download Sites
 * https://drive.google.com/drive/folders/1B71X1BMttL6yyi76REeOTNRrpopO8EAR?usp=sharing
 * https://1drv.ms/u/s!AnqkwcwMjB_PaDIfXya_M3-aLXw?e=qzfKcU
 * https://ja.osdn.net/users/bitsofcotton/
-
-# Archive
-This repository is archived, so without bug report, will no change.
