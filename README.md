@@ -11,7 +11,7 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     SimpleVector<T> v(/* some size */);
     Decompose<T> decom(v.size());
     // some operation on v.
-    const auto mw(decom.next(v));
+    const auto mw(decom.mother(v));
     
     // or we can do:
     SimpleVector<T> dst(/* some size */);
