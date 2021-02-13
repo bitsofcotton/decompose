@@ -28,34 +28,8 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
 This is similar algorithm to multilayer perceptron algorithm because latter one is to make A_0(x,k):=A(0,x,k)\*A(1,x,k)\*...\*A(n,x,k) from some differentials on A(n,x,k) depends on A(n-1,x,k) and A(n,x,k-1) and A(n-1,x,k-1) and differential itself. And with so, some of A(n,x,k) is the function depends on differential itself and A(n-1,x,k), so this is similar to the decomposition x=y\*z_0+\[I_1/2,I_1/2]y\*z_1+... on log(y). But I have no idea on the relation with them.
 
 # The things undone
-
-
-
-
-    
-    
-      
-
-
-    If we work with linear optimize, we can get non-overlearning result for the wavelet.
-
-
-
-
-    
-    
-
-      
-    But this is not implemented.
-
-
-
-
-    
-    
-
-      
-    
+If we work with linear optimize, we can get non-overlearning result for the wavelet.      
+But this is not implemented.
 
 # Known bug
 This returns overlearned result because of max rank matrix.
@@ -64,3 +38,6 @@ This returns overlearned result because of max rank matrix.
 * https://drive.google.com/drive/folders/1B71X1BMttL6yyi76REeOTNRrpopO8EAR?usp=sharing
 * https://1drv.ms/u/s!AnqkwcwMjB_PaDIfXya_M3-aLXw?e=qzfKcU
 * https://ja.osdn.net/users/bitsofcotton/
+
+# Archive
+This repository is archived.
