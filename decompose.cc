@@ -74,7 +74,7 @@ int main(int argc, const char* argv[]) {
   Decompose<num_t> odc(vv.size());
   const auto dd(odc.synth(odc.mother(vv), odc.freq(odc.mother(vv), vv)));
   for(int i = 0; i < dd.size(); i ++)
-    std::cout << vv[i] << "\t" << dd[i] << std::endl;
+    std::cout << dd[i] << ",\t" << vv[i] << std::endl;
   return 0;
 }
 
