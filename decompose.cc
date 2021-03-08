@@ -72,9 +72,13 @@ int main(int argc, const char* argv[]) {
   for(int i = 0; i < vv.size(); i ++)
     vv[i]  = v[i];
   Decompose<num_t> odc(vv.size());
-  const auto dd(odc.synth(odc.mother(vv), odc.freq(odc.mother(vv), vv)));
+  const auto m(odc.mother(vv));
+  std::cerr << m.dot(m) << std::endl;
+  const auto f(odc.freq(m, vv));
+  std::cerr << f.dot(f) << std::endl;
+  const auto dd(odc.synth(m, f));
   for(int i = 0; i < dd.size(); i ++)
-    std::cout << dd[i] << ",\t" << vv[i] << std::endl;
+    std::cout << dd[i] << ",\t" << vv[i] << ",\t" << f[i]<< std::endl;
   return 0;
 }
 
