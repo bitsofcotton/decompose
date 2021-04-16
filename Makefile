@@ -1,15 +1,14 @@
 CXX=	clang++
-LD=	${CXX}
 
 # compiler flags.
-#CXXFLAGS+=	-fopenmp
-CXXFLAGS+=	-D_WITHOUT_EIGEN_
-CXXFLAGS+=	-std=c++11 -Ofast -g3 -mtune=native
+CXXFLAGS+=	-std=c++11
+CXXFLAGS+=	-fopenmp -L/usr/local/lib -lomp
+CXXFLAGS+=	-Ofast -mtune=native -gfull
 LDFLAGS+=	-lc++
 
-CLEANFILES= *.o *.dSYM decompose
-
-all:		decompose
-clean:
-	@rm -rf ${CLEANFILES}
+#CXXFLAGS+=	-D_FLOAT_BITS_=32
+#CXXFLAGS+=	-D_FLOAT_BITS_=64
+#CXXFLAGS+=	-D_FLOAT_BITS_=128
+#CXXFLAGS+=	-D_FLOAT_BITS_=256
+#CXXFLAGS+=	-D_FLOAT_BITS_=512
 
