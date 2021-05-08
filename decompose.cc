@@ -7,9 +7,8 @@
 #include <iomanip>
 #include <assert.h>
 
-#include "ifloat.hh"
+#include "lieonn.hh"
 typedef myfloat num_t;
-#include "simplelin.hh"
 #include "decompose.hh"
 
 int main(int argc, const char* argv[]) {
