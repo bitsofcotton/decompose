@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <iomanip>
+#include <algorithm>
 #include <assert.h>
 
 #include "lieonn.hh"
@@ -27,9 +28,9 @@ int main(int argc, const char* argv[]) {
     vv[i]  = v[i];
   Decompose<num_t> odc(vv.size());
   const auto m(odc.mother(vv));
-  std::cerr << m.dot(m) << std::endl;
+  std::cout << m << std::endl;
   const auto f(odc.freq(m, vv));
-  std::cerr << f.dot(f) << std::endl;
+  std::cout << f << std::endl;
   const auto dd(odc.synth(m, f));
   for(int i = 0; i < dd.size(); i ++)
     std::cout << dd[i] << ",\t" << vv[i] << ",\t" << f[i]<< std::endl;
