@@ -17,22 +17,22 @@ so with linear optimize with certain z range, we get mother wavelet from the inp
     SimpleVector<T> dst(/* some size */);
     SimpleVector<T> src(/* some size */);
     // some operation on dst, src.
-    const auto mimic(Decompose(/* some size */).mimic(dst, src));
+    const auto mimic(Decompose<T>(/* some size */).mimic(dst, src));
     
     // or we can do:
     SimpleVector<T> v(/* some size */);
     // some operation on v.
-    const auto emphasis(Decompose(/* some size */).emphasis(v, /* some intensity */));
+    const auto emphasis(Decompose<T>(/* some size */).emphasis(v, /* some intensity */));
     
     // or we can do:
     SimpleVector<T> v(/* some size */);
     // some operation on v.
-    const auto enlarge(Decompose(v.size()).enlarge(v, /* some ratio */));
+    const auto enlarge(Decompose<T>(v.size()).enlarge(v, /* some ratio */));
     
     // or we can do:
     SimpleMatrix<T> m(/* some size */, /* some size */);
     // some operation on m.
-    const auto representation(Decompose(/* some size */).represent(m, /* some depth */));
+    const auto representation(Decompose<T>(/* some size */).represent(m, /* some depth */));
 
 # General Tips
 This is similar algorithm to multilayer perceptron algorithm because latter one is to make A_0(x,k):=A(0,x,k)\*A(1,x,k)\*...\*A(n,x,k) from some differentials on A(n,x,k) depends on A(n-1,x,k) and A(n,x,k-1) and A(n-1,x,k-1) and differential itself. And with so, some of A(n,x,k) is the function depends on differential itself and A(n-1,x,k), so this is similar to the decomposition x=y\*z_0+\[I_1/2,I_1/2]y\*z_1+... on log(y). But I have no idea on the relation with them.
