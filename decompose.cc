@@ -22,15 +22,13 @@ int main(int argc, const char* argv[]) {
     ins >> v[v.size() - 1];
   }
   v.emplace_back(v[0]);
-  SimpleVector<num_t> vv(v.size());
-  for(int i = 0; i < vv.size(); i ++)
-    vv[i]  = v[i];
-  Decompose<num_t> odc(vv.size());
-  const auto m(odc.mother(vv));
+  SimpleVector<num_t> vv;
+  vv.entity = move(v);
+  const auto m(mother(vv));
   std::cout << m << std::endl;
-  const auto f(odc.freq(m, vv));
+  const auto f(freq(m, vv));
   std::cout << f << std::endl;
-  const auto dd(odc.synth(m, f));
+  const auto dd(synth(m, f));
   for(int i = 0; i < dd.size(); i ++)
     std::cout << dd[i] << ",\t" << vv[i] << ",\t" << f[i]<< std::endl;
   return 0;
